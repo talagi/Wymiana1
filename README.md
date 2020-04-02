@@ -3,10 +3,10 @@ Projekt polega na tym iż użytkownicy zamieszczają ogłoszenia, co chieliby wy
 
 Uruchamianie projektu
 
-git clone link do repozytorium
-python -m venv venv
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-python manage.py createsuperuser
-The project will be available at 127.0.0.1:8000.
+1. git clone link do repozytorium
+2. python -m venv venv
+3. pip install -r requirements.txt
+4. python manage.py migrate
+5. python manage.py runserver
+6. python manage.py createsuperuser
+7. The project will be available at 127.0.0.1:8000.
