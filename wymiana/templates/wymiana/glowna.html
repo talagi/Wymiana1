@@ -1,0 +1,13 @@
+{% extends "wymiana/base.html" %}
+{% block body_block %}
+<div class="container">
+  <div class="jumbotron">
+    <h1>/witaj</h1>
+    {% if user.is_authenticated %}
+        <h2>Witaj {{ user.username }}</h2>
+    {% else %}
+        <h2>zaloguj/zarejestruj</h2>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
