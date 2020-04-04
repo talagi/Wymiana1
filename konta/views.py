@@ -1,14 +1,11 @@
-from django.shortcuts import render
-from konta.forms import ProfilForm, UzytkownikForm
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-
-
-def glowna(request):
-    return render(request, 'konta/glowna.html')
-
+from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from konta.forms import ProfilForm, UzytkownikForm
+from konta.models import Profil
 
 
 @login_required
@@ -20,38 +17,35 @@ def wyloguj(request):
 def rejestracja(request):
     registered = False
     if request.method == 'POST':
-        user_form = UzytkownikForm(data=request.POST)
-        profile_form = ProfilForm(data=request.POST)
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            user.set_password(user.password)
-            user.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            if 'profile_pic' in request.FILES:
-                print('found it')
-                profile.profile_pic = request.FILES['profile_pic']
-            profile.save()
+        print(request.POST)
+        formularz_uzytkownika = UzytkownikForm(request.POST)
+        formularz_profilu = ProfilForm(request.POST, request.FILES)
+        if formularz_uzytkownika.is_valid() and formularz_profilu.is_valid():
+            uzytkownik = formularz_uzytkownika.save()
+            uzytkownik.save()
+            profil = formularz_profilu.save(commit=False)
+            profil.user = uzytkownik
+            profil.save()
             registered = True
         else:
-            print(user_form.errors,profile_form.errors)
+            print(formularz_uzytkownika.errors, formularz_profilu.errors)
     else:
-        user_form = UzytkownikForm()
-        profile_form = ProfilForm()
-    return render(request,'konta/rejestracja.html',
-                          {'user_form':user_form,
-                           'profile_form':profile_form,
-                           'registered':registered})
+        formularz_uzytkownika = UzytkownikForm()
+        formularz_profilu = ProfilForm()
+    return render(request, 'konta/rejestracja.html',
+                  {'formularz_uzytkownika': formularz_uzytkownika,
+                   'formularz_profilu': formularz_profilu,
+                   'registered': registered})
 
 
 def logowanie(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            if user.is_active:
-                login(request,user)
+        nazwa = request.POST.get('username')
+        haslo = request.POST.get('password')
+        uzytkownik = authenticate(username=nazwa, password=haslo)
+        if uzytkownik:
+            if uzytkownik.is_active:
+                login(request, uzytkownik)
                 return HttpResponseRedirect(reverse('glowna'))
             else:
                 return HttpResponse("Twoje konto jest niekatywne.")
@@ -59,3 +53,21 @@ def logowanie(request):
             return HttpResponse("Złe dane logowania")
     else:
         return render(request, 'konta/logowanie.html')
+
+
+@login_required()
+def profil(request, pk):
+    if request.method == 'POST':
+        instance = get_object_or_404(Profil, user=pk)
+        formularz_profilu = ProfilForm(request.POST or None, request.FILES, instance=instance)
+        if formularz_profilu.is_valid():
+            formularz_profilu.save()
+        return redirect('profil', pk=pk)
+    else:
+        profil = Profil.objects.get(user=pk)
+        formularz_profilu = ProfilForm()
+        context = {
+            'formularz_profilu': formularz_profilu,
+            'profil': profil,
+        }
+        return render(request, 'konta/profil.html', context)

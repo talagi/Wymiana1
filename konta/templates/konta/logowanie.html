@@ -1,0 +1,18 @@
+{% extends 'wymiana/base.html' %}
+{% block body_block %}
+    <div class="container jumbotron jumbotron-fluid bg-warning mt-4">
+        <div class="col-12 text-center p-2">
+            <h1>Zaloguj się:</h1>
+        </div>
+        <div class="p-4 col-8 text-center mx-auto">
+            <form method="post" action="{% url 'logowanie' %}">
+                {% csrf_token %}
+                <label for="username">Nazwa:</label>
+                <input type="text" name="username" placeholder="Nazwa użytkowika">
+                <label for="password">Haslo:</label>
+                <input type="password" name="password" placeholder="Hasło">
+                <button type="submit" class="btn btn-dark my-4 btn-lg">Logowanie</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

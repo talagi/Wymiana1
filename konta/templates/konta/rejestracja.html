@@ -1,0 +1,30 @@
+{% extends "wymiana/base.html" %}
+{% load staticfiles %}
+{% block body_block %}
+    <div class="container jumbotron jumbotron-fluid bg-warning mt-4">
+        {% if registered %}
+            <div class="col-12 text-center p-2">
+                <h1>Dzięki za rejestrację!</h1>
+            </div>
+        {% else %}
+            <div class="col-12 text-center p-2">
+                <h1>Zarejestruj się</h1>
+                <h3>tylko wypełnij formluarz</h3>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-5 p-2 text-center mx-auto">
+                        {{ formularz_uzytkownika.as_p }}
+                    </div>
+                    <div class="col-5 p-2 text-center mx-auto">
+                        {{ formularz_profilu.as_p }}
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-dark my-4 btn-lg">Zarejestruj</button>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
