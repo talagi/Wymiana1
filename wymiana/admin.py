@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Komentarz, Wymiana
 
-# Register your models here.
+admin.site.register(Komentarz)
+admin.site.register(Wymiana)
